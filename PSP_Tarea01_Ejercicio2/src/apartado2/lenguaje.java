@@ -25,11 +25,12 @@ public class lenguaje {
         int numPalabras;
         String nombreArchivo;
         RandomAccessFile raf = null;
+        FileLock bloqueo = null;
 
         try {
             // Comprueba si se reciben los argumentos necesarios en la linea de comandos
             if (args.length != 2) {
-                System.out.println("Uso: java -jar lenguaje numPalabras nombreArchivo");
+                System.out.println("El comando debe ser: java -jar lenguaje numPalabras nombreArchivo");
                 return;//Sale del programa si no se han proporcionado los argumentos necesarios
             }
             //Recoge el número de palabras introducido como argumento en la variable numPalabras
@@ -43,10 +44,20 @@ public class lenguaje {
                 try {
                     archivo.createNewFile(); //Creamos el archivo
                     raf = new RandomAccessFile(archivo, "rw"); //Abrimos el fichero en modo lectura y escritura
-                    for (int i = 0; i < numPalabras; i++) {
-                        raf.writeChars("Palabra " +i + "- " + palabraAleatoria(8));
-                        raf.writeBytes(System.lineSeparator()); // Salto de línea
 
+                    //Mediante un bucle for escribimos las palabras aleatorias (método palabraAleatoria) y un salto de línea
+                    for (int i = 0; i < numPalabras; i++) {
+                        //***************                        
+                        //Sección crítica
+                        bloqueo = raf.getChannel().lock();
+                        // Posicionarse al final del archivo
+                        raf.seek(raf.length());
+                        raf.writeChars("Palabra " + i + "- " + palabraAleatoria(8));
+                        raf.writeBytes(System.lineSeparator()); // Salto de línea
+                        bloqueo.release();
+                        bloqueo = null;
+                        //Fin sección critica
+                        //***********************
                     }
                 } catch (Exception e) {
                     System.out.println("Erros al escribir en el fichero");
@@ -68,18 +79,15 @@ public class lenguaje {
     }
 
     public static String palabraAleatoria(int length) {
-        String abecedario = "abcdefghijklmnopqrstuvwxyz";
-        String mayusculas = abecedario.toUpperCase();
-        String alfabeto = abecedario + mayusculas;
-
+        String abecedario = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
         Random random = new Random();
+        StringBuilder resultado = new StringBuilder(length);
 
-        String resultado = "";
         for (int i = 0; i < length; i++) {
-            int posicion = random.nextInt(alfabeto.length());
-            char caracter = alfabeto.charAt(posicion);
-            resultado = resultado + caracter;
+            int posicion = random.nextInt(abecedario.length());
+            resultado.append(abecedario.charAt(posicion));
         }
-        return resultado;
+
+        return resultado.toString();
     }
 }
