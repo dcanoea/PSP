@@ -11,6 +11,8 @@ import java.io.RandomAccessFile;
 
 /**
  *
+ * Programa para leer los archivos .txt
+ *
  * @author David Cano Escario
  */
 public class LecturaRandomAccesFile {

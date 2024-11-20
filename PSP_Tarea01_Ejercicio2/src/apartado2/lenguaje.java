@@ -13,13 +13,20 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * Clase principal del programa que genera palabras aleatorias y las escribe en
+ * un archivo
  *
  * @author David Cano Escario
  */
 public class lenguaje {
 
     /**
-     * @param args the command line arguments
+     * Método principal que ejecuta el programa. Genera palabras aleatorias y
+     * las escribe en un archivo cuyo nombre se pasa como argumento.
+     *
+     * @param args Argumentos de la línea de comandos. El primer argumento es el
+     * número de palabras a generar y el segundo es el nombre del archivo donde
+     * se guardarán.
      */
     public static void main(String[] args) {
         int numPalabras;
@@ -72,6 +79,12 @@ public class lenguaje {
         }
     }
 
+    /**
+     * Genera una palabra aleatoria de una longitud especificada.
+     *
+     * @param length La longitud de la palabra aleatoria a generar.
+     * @return Una cadena de texto que contiene la palabra aleatoria.
+     */
     public static String palabraAleatoria(int length) {
         String abecedario = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
         Random random = new Random();
