@@ -40,41 +40,35 @@ public class lenguaje {
 
             //Preparamos el acceso al fichero
             File archivo = new File(nombreArchivo);
-            if (!archivo.exists()) {//si no existe el fichero
-                try {
-                    archivo.createNewFile(); //Creamos el archivo
-                    raf = new RandomAccessFile(archivo, "rw"); //Abrimos el fichero en modo lectura y escritura
+            try {
+                archivo.createNewFile(); //Creamos el archivo
+                raf = new RandomAccessFile(archivo, "rw"); //Abrimos el fichero en modo lectura y escritura
 
-                    //Mediante un bucle for escribimos las palabras aleatorias (método palabraAleatoria) y un salto de línea
-                    for (int i = 0; i < numPalabras; i++) {
-                        //***************                        
-                        //Sección crítica
-                        bloqueo = raf.getChannel().lock();
-                        // Posicionarse al final del archivo
-                        raf.seek(raf.length());
-                        raf.writeChars("Palabra " + i + "- " + palabraAleatoria(8));
-                        raf.writeBytes(System.lineSeparator()); // Salto de línea
-                        bloqueo.release();
-                        bloqueo = null;
-                        //Fin sección critica
-                        //***********************
-                    }
-                } catch (Exception e) {
-                    System.out.println("Erros al escribir en el fichero");
-                } finally {
-                    if (raf != null) {
-                        try {
-                            raf.close(); //nos aseguramos que se cierra el fichero
-                        } catch (IOException ex) {
-                            System.out.println("Error al cerrar el fichero");
-                            System.exit(1); //Si hay error, cerramos el programa
-                        }
-
-                    }
+                //Mediante un bucle for escribimos las palabras aleatorias (método palabraAleatoria) y un salto de línea
+                for (int i = 0; i < numPalabras; i++) {
+                    //***************                        
+                    //Sección crítica
+                    bloqueo = raf.getChannel().lock();
+                    // Posicionarse al final del archivo
+                    raf.seek(raf.length());
+                    raf.writeChars("Palabra " + i + "- " + palabraAleatoria(8));
+                    raf.writeBytes(System.lineSeparator()); // Salto de línea
+                    bloqueo.release();
+                    bloqueo = null;
+                    //Fin sección critica
+                    //***********************
                 }
+            } catch (Exception e) {
+                System.out.println("Erros al escribir en el fichero");
+            } finally {
+                raf.close(); //nos aseguramos que se cierra el fichero
             }
+
         } catch (NumberFormatException e) {
             System.out.println("El primer argumento debe ser un número entero válido.");
+        } catch (IOException ex) {
+            System.out.println("Error al cerrar el fichero");
+            Logger.getLogger(lenguaje.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

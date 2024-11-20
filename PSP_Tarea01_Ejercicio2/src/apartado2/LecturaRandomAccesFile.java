@@ -19,7 +19,7 @@ public class LecturaRandomAccesFile {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws FileNotFoundException, IOException {
-        File fichero = new File("C:\\Users\\poker\\Documents\\NetBeansProjects\\PSP\\PSP_Tarea01_Ejercicio2\\prueba.txt");
+        File fichero = new File("C:\\Users\\poker\\Documents\\NetBeansProjects\\PSP\\PSP_Tarea01_Ejercicio2\\granfichero.txt");
         try {
             RandomAccessFile archivo = new RandomAccessFile(fichero, "r");
             String linea;

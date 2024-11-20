@@ -18,29 +18,31 @@ public class colaborar {
     public static void main(String[] args) {
         String nombreArchivo = args[0]; // El nombre del archivo se recibe como el primer parámetro
 
-        // Si el archivo existe se borra
-        File archivo = new File(nombreArchivo);
-        if (archivo.exists()) {
-            archivo.delete(); // Elimina el archivo si ya existía
-        }
-
         try {
             for (int i = 1; i <= 10; i++) {
                 int numPalabras = i * 10; // Cantidad de palabras para esta instancia
 
-                // Proceso con el comando para ejecutar lenguaje.jar
+                // Construir el comando para ejecutar el JAR con argumentos
                 ProcessBuilder pb = new ProcessBuilder("java", "-jar", "lenguaje.jar", String.valueOf(numPalabras), nombreArchivo);
 
-                // Iniciamos el proceso
+                // Lanzar el proceso
+                pb.inheritIO(); // Para heredar la consola (opcional, útil para depuración)
                 Process proceso = pb.start();
 
-                //Mostramos en consola que se ha creado otro proceso
-                System.out.println("Creado proceso " + i);
+                // Esperar a que el proceso termine antes de iniciar el siguiente
+                int exitCode = proceso.waitFor();
+                if (exitCode != 0) {
+                    System.out.println("Instancia " + i + " terminó con errores (código " + exitCode + ").");
+                } else {
+                    System.out.println("Instancia " + i + " completada con éxito.");
+                }
             }
-        } catch (IOException ex) {
-            System.out.println("Error: " + ex.toString());
-            Logger.getLogger(colaborar.class.getName()).log(Level.SEVERE, null, ex);
-        }
 
+            System.out.println("Proceso completado. Revisa el archivo: " + nombreArchivo);
+        } catch (IOException e) {
+            System.out.println("Error al ejecutar una instancia de 'lenguaje': " + e.getMessage());
+        } catch (InterruptedException e) {
+            System.out.println("Ejecución interrumpida: " + e.getMessage());
+        }
     }
 }
