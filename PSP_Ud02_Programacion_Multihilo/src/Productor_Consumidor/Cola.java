@@ -4,8 +4,6 @@
  */
 package Productor_Consumidor;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -24,6 +22,7 @@ class Cola {
         sigSal = 1;
     }
 
+    
     public synchronized void almacenar(int x) {
         try {
             while (ocupados == tamano) {
