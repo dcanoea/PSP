@@ -4,9 +4,6 @@
  */
 package Ejercicio1;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
  *
  * @author David Cano Escario
