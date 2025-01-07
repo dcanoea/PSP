@@ -21,7 +21,6 @@ public class Main {
         HiloConsumidor consumidor = new HiloConsumidor(buffer);
 
         productor.start();
-
         consumidor.start();
 
     }

@@ -20,15 +20,15 @@ public class HiloProductor extends Thread {
     }
 
     @Override
-    public synchronized void run() {
+    public void run() {
         final char caracterTope = 'Z';//Ultimo caracter disponible
         char caracter = 'A';//Primer caracter
 
         for (int i = 0; i < 15; i++) {
             //agrega el caracter
             buffer.almacenar(caracter);
-            System.out.println("Depositado el carácter " + caracter + " en el buffer");
-
+            System.out.println("<>Depositado el carácter " + caracter + 
+                    " en el buffer <><><><><><> nº de carácteres en buffer " + buffer.getOcupados());
             //incrementa el carácter (A, B, C...)
             caracter++;
             //si llega al tope (Z)

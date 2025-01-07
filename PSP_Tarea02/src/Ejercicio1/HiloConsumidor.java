@@ -20,15 +20,15 @@ public class HiloConsumidor extends Thread {
     }
 
     @Override
-    public synchronized void run() {
+    public void run() {
         for (int i = 0; i < 15; i++) {
             try {
-                Thread.sleep(300);
-                System.out.println("Recogido el carácter " + buffer.extraer() + " del buffer");
+                Thread.sleep(1000);
+                System.out.println("--Recogido el carácter " + buffer.extraer() +
+                        " del buffer -------- nº de carácteres en buffer " + buffer.getOcupados());
             } catch (InterruptedException ex) {
                 Logger.getLogger(HiloConsumidor.class.getName()).log(Level.SEVERE, null, ex);
             }
-
         }
     }
 }

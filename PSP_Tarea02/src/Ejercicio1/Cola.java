@@ -21,9 +21,12 @@ public class Cola {
         this.ocupados = 0;  // Número de elementos actualmente en el búfer
         this.tamano = tamano;
     }  
+
+    public int getOcupados() {
+        return ocupados;
+    }
     
 
-    // Método para almacenar caracteres en el búfer (comportamiento LIFO)
     public synchronized void almacenar(char caracter) {
         try {
             // Espera si el búfer está lleno
@@ -43,7 +46,6 @@ public class Cola {
         }
     }
 
-    // Método para extraer caracteres del búfer (comportamiento LIFO)
     public synchronized char extraer() {
         char caracter = 0;
         try {
@@ -63,7 +65,6 @@ public class Cola {
             notifyAll();
 
         } catch (InterruptedException e) {
-            Thread.currentThread().interrupt(); // Restaura el estado de interrupción
         }
         return caracter;
     }
