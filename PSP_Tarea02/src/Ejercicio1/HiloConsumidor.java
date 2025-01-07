@@ -4,6 +4,9 @@
  */
 package Ejercicio1;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author David Cano Escario
@@ -17,15 +20,15 @@ public class HiloConsumidor extends Thread {
     }
 
     @Override
-    public void run() {
-        try {
-            
-            for (int i = 0; i < 15; i++) {
+    public synchronized void run() {
+        for (int i = 0; i < 15; i++) {
+            try {
                 Thread.sleep(300);
                 System.out.println("Recogido el carácter " + buffer.extraer() + " del buffer");
+            } catch (InterruptedException ex) {
+                Logger.getLogger(HiloConsumidor.class.getName()).log(Level.SEVERE, null, ex);
             }
 
-        } catch (Exception e) {
         }
     }
 }

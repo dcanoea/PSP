@@ -5,8 +5,6 @@
 package Ejercicio2_Filosofos;
 
 import java.util.concurrent.Semaphore;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -28,7 +26,7 @@ public class Filosofo extends Thread {
 
     @Override
     public void run() {
-        while (cuentaComida <= 10) {
+        while (true) {
             pensar();
             comer();
         }
@@ -46,44 +44,60 @@ public class Filosofo extends Thread {
 
     private void comer() {
         try {
-            
+
             System.out.println("-- Filosofo " + id + " está hambriento");
-            
-            if (cogerPalillos() == true){
-            cuentaComida++;
-            System.out.println("Filosofo " + id + " come. ---------- Ha comido " + cuentaComida + " veces. -----------------");
-            Thread.sleep((long) (Math.random() * 1000));}
-            
-            
-            dejarPalillos();
-            
+            Thread.sleep((long) (Math.random() * 1000));
+
+            if (cogerPalilloDerecho() == true && cogerPalilloIzquierdo() == true) {
+                cuentaComida++;
+                System.out.println("Filosofo " + id + " come. ---------- Ha comido " + cuentaComida + " veces. ----------------- ");
+                dejarPalillos();
+                Thread.sleep((long) (Math.random() * 1000));
+
+            } else {
+                System.out.println("------------ No hay palillos disponibles");
+                dejarPalillos();
+            }
+
         } catch (InterruptedException ex) {
             System.out.println("Error al comer");
             ex.printStackTrace();
         }
     }
 
-    private boolean cogerPalillos() {
+    private boolean cogerPalilloDerecho() {
         try {
+
             palilloDerecho.acquire();
             System.out.println("|d Filosofo " + id + " coge el palillo derecho " + id);
 
-            palilloIzquierdo.acquire();
-            System.out.println("|i Filosofo " + id + " coge el palillo izquierdo " + ((id + 1) % 5));
-            
             return true;
         } catch (InterruptedException ex) {
             System.out.println("Error al coger palillos");
             ex.printStackTrace();
         }
-        
+
+        return false;
+    }
+
+    private boolean cogerPalilloIzquierdo() {
+        try {
+            palilloIzquierdo.acquire();
+            System.out.println("|i Filosofo " + id + " coge el palillo izquierdo " + ((id + 1) % 5));
+
+            return true;
+        } catch (InterruptedException ex) {
+            System.out.println("Error al coger palillos");
+            ex.printStackTrace();
+        }
+
         return false;
     }
 
     private void dejarPalillos() {
         palilloDerecho.release();
         palilloIzquierdo.release();
-        System.out.println("Filosofo " + id + " deja palillos");
+        System.out.println("|| Filosofo " + id + " deja Libres palillos " + id + " y " + ((id + 1) % 5));
     }
 
 }

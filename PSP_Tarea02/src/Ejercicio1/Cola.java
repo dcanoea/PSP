@@ -20,12 +20,7 @@ public class Cola {
         this.sale = 0;   // Indica la siguiente posición para extraer un valor
         this.ocupados = 0;  // Número de elementos actualmente en el búfer
         this.tamano = tamano;
-    }
-
-    public int getTamano() {
-        return tamano;
-    }
-    
+    }  
     
 
     // Método para almacenar caracteres en el búfer (comportamiento LIFO)
@@ -45,7 +40,6 @@ public class Cola {
             notifyAll();
 
         } catch (InterruptedException e) {
-            Thread.currentThread().interrupt(); // Restaura el estado de interrupción
         }
     }
 
@@ -58,7 +52,7 @@ public class Cola {
                 wait();
             }
 
-            // Extraemos el último carácter insertado (LIFO)
+            // Extraemos el último carácter insertado
             int pos = (entra + tamano - 1) % tamano;  // Última posición ocupada
             caracter = datos[pos];
             datos[pos] = 0;  // Limpiamos la posición ocupada

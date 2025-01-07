@@ -16,12 +16,14 @@ public class Main {
     public static void main(String[] args) {
 
         Cola buffer = new Cola(6);
-        
+
         HiloProductor productor = new HiloProductor(buffer);
         HiloConsumidor consumidor = new HiloConsumidor(buffer);
-        
+
         productor.start();
+
         consumidor.start();
+
     }
-    
+
 }
