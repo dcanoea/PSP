@@ -28,7 +28,8 @@ public class Main {
         Thread[] filosofos = new Thread[numFilosofos];
         for (int i = 0; i < numFilosofos; i++) {
             Semaphore palilloDerecho = palillos[i];
-            Semaphore palilloIzquierdo = palillos[(i + 1) % numFilosofos]; // (0+1) % 5 = 1 ----  (1+1) % 5 = 2 ---- (2+1) % 5 = 3 ---- (3+1) % 5 = 4 ---- (4+1) % 5 = 0 ----
+            Semaphore palilloIzquierdo = palillos[(i + 1) % numFilosofos]; 
+// (0+1) % 5 = 1 ----  (1+1) % 5 = 2 ---- (2+1) % 5 = 3 ---- (3+1) % 5 = 4 ---- (4+1) % 5 = 0 ----
 
             filosofos[i] = new Filosofo(i, palilloDerecho, palilloIzquierdo);
 
