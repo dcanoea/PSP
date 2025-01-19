@@ -67,6 +67,7 @@ public class Servidor_UDP {
             }       
             
             System.out.println("Numero acertado. FIN DEL PROGRAMA");
+            sSocket.close();
             
         } catch (SocketException e) {
             // En caso de error al crear el socket, imprime el mensaje de error
