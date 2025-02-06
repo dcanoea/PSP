@@ -50,7 +50,6 @@ public class Servidor_TCP {
             //Leer el nombre del fichero solicitado
             String fichero = flujoEntrada.readUTF();
             File file = new File(fichero);
-
             if (file.exists()) {
                 flujoSalida.writeUTF("Encontrado");//Respuesta que se enviará al cliente
                 System.out.println("Fichero existe");
@@ -71,7 +70,7 @@ public class Servidor_TCP {
                 flujoSalida.writeUTF("El fichero no existe");//Respuesta que se enviará al cliente
                 System.out.println("Fichero no existe");
             }
-
+            
             sCliente.close();
 
         } catch (IOException ex) {
