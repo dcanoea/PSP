@@ -39,7 +39,7 @@ public class Servidor_TCP {
     }
 }
 
-class ManejadorCliente implements Runnable {
+class ManejadorCliente extends Thread {
 
     private Socket socketCliente;
     private int numSecreto;
