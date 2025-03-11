@@ -1,0 +1,8 @@
+Hola, este es el fichero del ejercicio.
+C:\Users\poker\Documents\NetBeansProjects\PSP\PSP_Tarea03_Ej02\src\psp_tarea03_ej02\fichero.txt
+Linea1
+Linea2
+linea3
+linea4
+linea5
+David Cano Escario
