@@ -27,11 +27,11 @@ public class Servidor_TCP {
     /**
      * @param args the command line arguments
      */
-    static final int puerto = 1500;
+    static final int puerto = 2000;
 
     public static void main(String[] args) {
         try {
-            // Creamos el objeto ServerSocket que escuchará en el puerto 1500
+            // Creamos el objeto ServerSocket que escuchará en el puerto 2000
             ServerSocket skServidor = new ServerSocket(puerto);
             System.out.println("Servidor escuchando en puerto " + puerto);
 

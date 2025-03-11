@@ -24,11 +24,11 @@ public class Cliente_TCP {
      * @param args the command line arguments
      */
     static final String host = "localhost";
-    static final int puerto = 1500;
+    static final int puerto = 2000;
 
     public static void main(String[] args) {
         try {
-            //Se establece una conexión al servidor en el puerto 1500 de la máquina local (localhost)
+            //Se establece una conexión al servidor en el puerto 2000 de la máquina local (localhost)
             Socket sCliente = new Socket(host, puerto);
 
             //Nombre del fichero a buscar pasado por consola
