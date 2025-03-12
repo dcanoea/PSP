@@ -59,7 +59,6 @@ public class Servidor_TCP {
 
                             if (comando.equals("ls")) {
                                 System.out.println("El cliente quiere ver el contenido del directorio");
-                                flujoSalida.writeUTF("Introduce la ruta del directorio");
                                 String directorioEntrada = flujoEntrada.readUTF();
                                 File directorio = new File(directorioEntrada);
 
@@ -74,13 +73,12 @@ public class Servidor_TCP {
                                 }
                                 estado = 1;
                                 break;
-                            } else if (comando.equals("get")) {
+                            }
+                            if (comando.equals("get")) {
                                 //Leer el nombre del fichero solicitado
                                 System.out.println("El cliente quiere ver el contenido del fichero solicitado");
                                 estado = 3;
                                 break;
-                            } else {
-                                estado = 1;
                             }
                             break;
 
