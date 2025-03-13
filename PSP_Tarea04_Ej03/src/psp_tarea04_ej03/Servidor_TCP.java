@@ -14,113 +14,97 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.net.ssl.SSLServerSocket;
 
 /**
  *
  * @author David Cano Escario
  */
 public class Servidor_TCP {
-
-    /**
-     * @param args the command line arguments
-     */
-    static final int puerto = 2000;
-
+    
+    static int contadorClientes = 0; //Contador para asignar Id a los clientes
+    static int puerto = 2000;
+    
     public static void main(String[] args) {
         try {
             // Creamos el objeto ServerSocket que escuchará en el puerto 2000
-            ServerSocket skServidor = new ServerSocket(puerto);
+            ServerSocket serverSocket = new ServerSocket(puerto);
             System.out.println("Servidor escuchando en puerto " + puerto);
 
-            //Permitimos la conexión de varios clientes con un bucle infinito
+            //Bucle infinito para recibir conexiones de distintos clientes
             while (true) {
                 //Esperamos una conexión entrante del cliente
-                Socket sCliente = skServidor.accept();
-                System.out.println("Cliente conectado");
+                Socket socketCliente = serverSocket.accept();
+                contadorClientes++;//Incrementa el contador de clientes
+                System.out.println("Cliente " + contadorClientes + " conectado");
 
-                //Flujo de entrada desde el cliente
-                InputStream input = sCliente.getInputStream();
-                DataInputStream flujoEntrada = new DataInputStream(input);
-
-                //Flujo de salida hacia el cliente
-                OutputStream output = sCliente.getOutputStream();
-                DataOutputStream flujoSalida = new DataOutputStream(output);
-
-                int estado = 1;
-                String comando = "";
-                do {
-                    switch (estado) {
-                        case 1:
-                            flujoSalida.writeUTF("Introduce comando (ls/get/exit)");
-                            comando = flujoEntrada.readUTF();
-
-                            if (comando.equals("ls")) {
-                                System.out.println("El cliente quiere ver el contenido del directorio");
-                                String directorioEntrada = flujoEntrada.readUTF();
-                                File directorio = new File(directorioEntrada);
-
-                                if (directorio.exists() && directorio.isDirectory()) {
-                                    String listaDirectorios[] = directorio.list();
-                                    for (String l : listaDirectorios) {
-                                        flujoSalida.writeUTF(l);
-                                    }
-                                    flujoSalida.writeUTF("EOF");
-                                } else {
-                                    flujoSalida.writeUTF("El directorio no existe");
-                                }
-                                estado = 1;
-                                break;
-                            }
-                            if (comando.equals("get")) {
-                                //Leer el nombre del fichero solicitado
-                                System.out.println("El cliente quiere ver el contenido del fichero solicitado");
-                                estado = 3;
-                                break;
-                            }
-                            break;
-
-                        case 3://voy a mostrar el archivo
-                            flujoSalida.writeUTF("Introduce el nombre del archivo");
-                            String fichero = flujoEntrada.readUTF();
-                            // Muestro el fichero
-                            File file = new File(fichero);
-                            if (file.exists()) {
-                                flujoSalida.writeUTF("Encontrado");//Respuesta que se enviará al cliente
-                                System.out.println("Fichero existe");
-
-                                //Enviamos el contenido del fichero
-                                FileReader fr = new FileReader(file);
-                                BufferedReader br = new BufferedReader(fr);
-                                String linea;
-                                while ((linea = br.readLine()) != null) {
-                                    flujoSalida.writeUTF(linea);//Se envía cada línea del archivo al cliente hasta que no haya más. Se usa el flujo de salida
-                                }
-
-                                flujoSalida.writeUTF("EOF");  // Marcador para indicar el fin del archivo
-                                System.out.println("Fichero enviado al cliente");
-                                br.close();
-                                fr.close();
-                            } else {
-                                flujoSalida.writeUTF("El fichero no existe");//Respuesta que se enviará al cliente
-                                System.out.println("Fichero no existe");
-                            }
-
-                            estado = 1;
-                            break;
-                    }
-
-                    if (comando.equals("exit")) {
-                        estado = -1;
-                    }
-                } while (estado != -1);
-
-                sCliente.close();
+                //Crea un hilo para manejar al cliente
+                Thread hilo = new Thread(new ManejadorCliente(socketCliente, contadorClientes));
+                hilo.start();
             }
         } catch (IOException ex) {
             ex.printStackTrace();
+        }
+    }
+    
+}
+
+class ManejadorCliente extends Thread {
+    
+    private Socket socketCliente;
+    private int idCliente;
+    
+    public ManejadorCliente(Socket socketCliente, int idCliente) {
+        this.socketCliente = socketCliente;
+        this.idCliente = idCliente;
+    }
+    
+    @Override
+    public void run() {
+        try {
+            //Flujo de entrada desde el cliente
+            InputStream input = socketCliente.getInputStream();
+            DataInputStream flujoEntrada = new DataInputStream(input);
+
+            //Flujo de salida hacia el cliente
+            OutputStream output = socketCliente.getOutputStream();
+            DataOutputStream flujoSalida = new DataOutputStream(output);
+
+            //Autenticar usuario
+            String user = flujoEntrada.readUTF();
+            String pass = flujoEntrada.readUTF();
+            
+            if (user.equals("David") && pass.equals("Cano")) {
+                flujoSalida.writeUTF("Autenticacion OK");
+                
+                //Leer el nombre del fichero solicitado
+                String fichero = flujoEntrada.readUTF();
+                File file = new File(fichero);
+                if (file.exists()) {
+                    flujoSalida.writeUTF("Encontrado");//Respuesta que se enviará al cliente
+                    System.out.println("Cliente " + idCliente + ": El fichero existe");
+
+                    //Enviamos el contenido del fichero
+                    FileReader fr = new FileReader(file);
+                    BufferedReader br = new BufferedReader(fr);
+                    String linea;
+                    while ((linea = br.readLine()) != null) {
+                        flujoSalida.writeUTF(linea);//Se envía cada línea del archivo al cliente hasta que no haya más. Se usa el flujo de salida
+                    }
+                    
+                    flujoSalida.writeUTF("EOF");  // Marcador para indicar el fin del archivo
+                    System.out.println("Fichero enviado al cliente " + idCliente);
+                    br.close();
+                    fr.close();
+                } else {
+                    flujoSalida.writeUTF("Cliente " + idCliente + ": El fichero no existe");//Respuesta que se enviará al cliente
+                    System.out.println("Cliente " + idCliente + ": El fichero no existe");
+                }
+            } else {
+                flujoSalida.writeUTF("Error en la autenticación");
+            }
+            socketCliente.close();
+        } catch (IOException ex) {
+            System.err.println("error con el cliente " + idCliente + ": " + ex.getMessage());
         }
     }
 }
