@@ -10,8 +10,6 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -20,24 +18,20 @@ import java.net.Socket;
  * @author David Cano Escario
  */
 public class Servidor_TCP {
-    
-    static int contadorClientes = 0; //Contador para asignar Id a los clientes
+
+    static int contadorClientes = 0;
     static int puerto = 2000;
-    
+
     public static void main(String[] args) {
         try {
-            // Creamos el objeto ServerSocket que escuchará en el puerto 2000
             ServerSocket serverSocket = new ServerSocket(puerto);
             System.out.println("Servidor escuchando en puerto " + puerto);
 
-            //Bucle infinito para recibir conexiones de distintos clientes
             while (true) {
-                //Esperamos una conexión entrante del cliente
                 Socket socketCliente = serverSocket.accept();
-                contadorClientes++;//Incrementa el contador de clientes
+                contadorClientes++;
                 System.out.println("Cliente " + contadorClientes + " conectado");
 
-                //Crea un hilo para manejar al cliente
                 Thread hilo = new Thread(new ManejadorCliente(socketCliente, contadorClientes));
                 hilo.start();
             }
@@ -45,66 +39,95 @@ public class Servidor_TCP {
             ex.printStackTrace();
         }
     }
-    
 }
 
 class ManejadorCliente extends Thread {
-    
+
     private Socket socketCliente;
     private int idCliente;
-    
+
     public ManejadorCliente(Socket socketCliente, int idCliente) {
         this.socketCliente = socketCliente;
         this.idCliente = idCliente;
     }
-    
+
     @Override
     public void run() {
         try {
-            //Flujo de entrada desde el cliente
-            InputStream input = socketCliente.getInputStream();
-            DataInputStream flujoEntrada = new DataInputStream(input);
+            DataInputStream flujoEntrada = new DataInputStream(socketCliente.getInputStream());
+            DataOutputStream flujoSalida = new DataOutputStream(socketCliente.getOutputStream());
 
-            //Flujo de salida hacia el cliente
-            OutputStream output = socketCliente.getOutputStream();
-            DataOutputStream flujoSalida = new DataOutputStream(output);
-
-            //Autenticar usuario
             String user = flujoEntrada.readUTF();
             String pass = flujoEntrada.readUTF();
-            
-            if (user.equals("David") && pass.equals("Cano")) {
-                flujoSalida.writeUTF("Autenticacion OK");
-                
-                //Leer el nombre del fichero solicitado
-                String fichero = flujoEntrada.readUTF();
-                File file = new File(fichero);
-                if (file.exists()) {
-                    flujoSalida.writeUTF("Encontrado");//Respuesta que se enviará al cliente
-                    System.out.println("Cliente " + idCliente + ": El fichero existe");
 
-                    //Enviamos el contenido del fichero
-                    FileReader fr = new FileReader(file);
-                    BufferedReader br = new BufferedReader(fr);
-                    String linea;
-                    while ((linea = br.readLine()) != null) {
-                        flujoSalida.writeUTF(linea);//Se envía cada línea del archivo al cliente hasta que no haya más. Se usa el flujo de salida
+            if (user.equals("javier") && pass.equals("secreta")) {
+                flujoSalida.writeUTF("Autenticacion OK");
+
+                String comando;
+                boolean continuar = true;
+
+                while (continuar) {
+                    flujoSalida.writeUTF("Introduce comando (ls/get/exit)");
+                    comando = flujoEntrada.readUTF();
+
+                    switch (comando) {
+                        case "ls":
+                            flujoSalida.writeUTF("Introduce el directorio a listar:");
+                            String directorioPath = flujoEntrada.readUTF();
+                            File directorio = new File(directorioPath);
+
+                            if (directorio.exists() && directorio.isDirectory()) {
+                                String[] archivos = directorio.list();
+                                for (String archivo : archivos) {
+                                    flujoSalida.writeUTF(archivo);
+                                }
+                            } else {
+                                flujoSalida.writeUTF("El directorio no existe o no es válido.");
+                            }
+                            flujoSalida.writeUTF("EOF");
+                            break;
+
+                        case "get":
+                            flujoSalida.writeUTF("Introduce el nombre del fichero: ");
+                            String fichero = flujoEntrada.readUTF();
+                            File file = new File(fichero);
+
+                            if (file.exists()) {
+                                flujoSalida.writeUTF("Encontrado");
+                                BufferedReader br = new BufferedReader(new FileReader(file));
+                                String linea;
+                                while ((linea = br.readLine()) != null) {
+                                    flujoSalida.writeUTF(linea);
+                                }
+                                flujoSalida.writeUTF("EOF");
+                                br.close();
+                            } else {
+                                flujoSalida.writeUTF("El fichero no existe");
+                            }
+                            break;
+
+                        case "exit":
+                            System.out.println("Cliente " + idCliente + " desconectado.");
+                            flujoSalida.writeUTF("Desconectado");
+                            continuar = false;
+                            break;
+
+                        default:
+                            flujoSalida.writeUTF("Comando no reconocido");
                     }
-                    
-                    flujoSalida.writeUTF("EOF");  // Marcador para indicar el fin del archivo
-                    System.out.println("Fichero enviado al cliente " + idCliente);
-                    br.close();
-                    fr.close();
-                } else {
-                    flujoSalida.writeUTF("Cliente " + idCliente + ": El fichero no existe");//Respuesta que se enviará al cliente
-                    System.out.println("Cliente " + idCliente + ": El fichero no existe");
                 }
+
+                flujoSalida.close();
+                flujoEntrada.close();
+                socketCliente.close();
+
             } else {
                 flujoSalida.writeUTF("Error en la autenticación");
+                socketCliente.close();
             }
-            socketCliente.close();
+
         } catch (IOException ex) {
-            System.err.println("error con el cliente " + idCliente + ": " + ex.getMessage());
+            System.err.println("Error con el cliente " + idCliente + ": " + ex.getMessage());
         }
     }
 }
