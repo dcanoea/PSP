@@ -135,6 +135,8 @@ class ManejadorCliente extends Thread {
                     }
                 } while (estado != -1);
 
+                String cadenaDesconectado = flujoEntrada.readUTF();
+                System.out.println("Cliente " + idCliente + " desconectado");
                 flujoSalida.close();
                 flujoEntrada.close();
                 socketCliente.close();
