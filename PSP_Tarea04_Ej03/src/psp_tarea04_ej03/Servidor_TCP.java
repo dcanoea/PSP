@@ -60,7 +60,7 @@ class ManejadorCliente extends Thread {
             String user = flujoEntrada.readUTF();
             String pass = flujoEntrada.readUTF();
 
-            if (user.equals("javier") && pass.equals("secreta")) {
+            if (user.equals("David") && pass.equals("Cano")) {
                 flujoSalida.writeUTF("Autenticacion OK");
 
                 String comando;
@@ -69,7 +69,7 @@ class ManejadorCliente extends Thread {
                 while (continuar) {
                     flujoSalida.writeUTF("Introduce comando (ls/get/exit)");
                     comando = flujoEntrada.readUTF();
-
+                    
                     switch (comando) {
                         case "ls":
                             flujoSalida.writeUTF("Introduce el directorio a listar:");
@@ -114,6 +114,7 @@ class ManejadorCliente extends Thread {
 
                         default:
                             flujoSalida.writeUTF("Comando no reconocido");
+                            break;
                     }
                 }
 

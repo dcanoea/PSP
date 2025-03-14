@@ -83,6 +83,7 @@ public class Cliente_TCP {
                         break;
                     } else {
                         System.out.println("Comando no reconocido");
+                        break;
                     }
                 }
             } else {
