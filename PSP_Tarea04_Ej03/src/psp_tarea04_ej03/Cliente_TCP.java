@@ -77,7 +77,6 @@ public class Cliente_TCP {
                         }
                     } else if (comando.equals("exit")) {
                         System.out.println("Desconectado");
-                        flujoSalida.writeUTF("Desconectado");
                         flujoSalida.close();
                         flujoEntrada.close();
                         sCliente.close();

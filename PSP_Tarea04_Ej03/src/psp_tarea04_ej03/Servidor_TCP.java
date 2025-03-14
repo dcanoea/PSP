@@ -126,7 +126,6 @@ class ManejadorCliente extends Thread {
                             break;
 
                         case -1:
-                            System.out.println("Cliente " + idCliente + " desconectado.");
                             flujoSalida.writeUTF("Desconectado");
 
                         default:
@@ -135,7 +134,6 @@ class ManejadorCliente extends Thread {
                     }
                 } while (estado != -1);
 
-                String cadenaDesconectado = flujoEntrada.readUTF();
                 System.out.println("Cliente " + idCliente + " desconectado");
                 flujoSalida.close();
                 flujoEntrada.close();
