@@ -64,30 +64,44 @@ class ManejadorCliente extends Thread {
                 flujoSalida.writeUTF("Autenticacion OK");
 
                 String comando;
-                boolean continuar = true;
+                int estado = 1;
+                do {
 
-                while (continuar) {
-                    flujoSalida.writeUTF("Introduce comando (ls/get/exit)");
-                    comando = flujoEntrada.readUTF();
-                    
-                    switch (comando) {
-                        case "ls":
-                            flujoSalida.writeUTF("Introduce el directorio a listar:");
-                            String directorioPath = flujoEntrada.readUTF();
-                            File directorio = new File(directorioPath);
+                    switch (estado) {
 
-                            if (directorio.exists() && directorio.isDirectory()) {
-                                String[] archivos = directorio.list();
-                                for (String archivo : archivos) {
-                                    flujoSalida.writeUTF(archivo);
+                        case 1:
+                            flujoSalida.writeUTF("Introduce comando (ls/get/exit)");
+                            comando = flujoEntrada.readUTF();
+
+                            if (comando.equals("ls")) {
+                                flujoSalida.writeUTF("Introduce el directorio a listar:");
+                                String directorioPath = flujoEntrada.readUTF();
+                                File directorio = new File(directorioPath);
+
+                                if (directorio.exists() && directorio.isDirectory()) {
+                                    String[] archivos = directorio.list();
+                                    for (String archivo : archivos) {
+                                        flujoSalida.writeUTF(archivo);
+                                    }
+                                } else {
+                                    flujoSalida.writeUTF("El directorio no existe o no es válido.");
                                 }
+                                flujoSalida.writeUTF("EOF");
+                                estado = 1;
+                                break;
+                            } else if (comando.equals("get")) {
+                                estado = 3;
+                                break;
+                            } else if (comando.equals("exit")) {
+                                estado = -1;
+                                break;
                             } else {
-                                flujoSalida.writeUTF("El directorio no existe o no es válido.");
+                                flujoSalida.writeUTF("Comando no reconocido");
+                                estado = 1;
+                                break;
                             }
-                            flujoSalida.writeUTF("EOF");
-                            break;
 
-                        case "get":
+                        case 3:
                             flujoSalida.writeUTF("Introduce el nombre del fichero: ");
                             String fichero = flujoEntrada.readUTF();
                             File file = new File(fichero);
@@ -101,22 +115,25 @@ class ManejadorCliente extends Thread {
                                 }
                                 flujoSalida.writeUTF("EOF");
                                 br.close();
+
                             } else {
                                 flujoSalida.writeUTF("El fichero no existe");
+
                             }
+                            estado = 1;
                             break;
 
-                        case "exit":
+                        case -1:
                             System.out.println("Cliente " + idCliente + " desconectado.");
                             flujoSalida.writeUTF("Desconectado");
-                            continuar = false;
+                            estado = -1;
                             break;
 
                         default:
                             flujoSalida.writeUTF("Comando no reconocido");
-                            break;
+                            estado = 1;
                     }
-                }
+                } while (estado != -1);
 
                 flujoSalida.close();
                 flujoEntrada.close();
