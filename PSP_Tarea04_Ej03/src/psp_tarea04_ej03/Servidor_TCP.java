@@ -30,7 +30,7 @@ public class Servidor_TCP {
             while (true) {
                 Socket socketCliente = serverSocket.accept();
                 contadorClientes++;
-                System.out.println("Cliente " + contadorClientes + " conectado");
+                System.out.println("Intentando conectar Cliente " + contadorClientes);
 
                 Thread hilo = new Thread(new ManejadorCliente(socketCliente, contadorClientes));
                 hilo.start();
@@ -62,6 +62,7 @@ class ManejadorCliente extends Thread {
 
             if (user.equals("David") && pass.equals("Cano")) {
                 flujoSalida.writeUTF("Autenticacion OK");
+                System.out.println("Cliente " + idCliente + " conectado");
 
                 String comando;
                 int estado = 1;
@@ -106,8 +107,9 @@ class ManejadorCliente extends Thread {
                             String fichero = flujoEntrada.readUTF();
                             File file = new File(fichero);
 
-                            if (file.exists()) {
+                            if (file.exists() && file.isFile()) {
                                 flujoSalida.writeUTF("Encontrado");
+                                System.out.println("Fichero enviado a Cliente " + idCliente);
                                 BufferedReader br = new BufferedReader(new FileReader(file));
                                 String linea;
                                 while ((linea = br.readLine()) != null) {
@@ -126,8 +128,6 @@ class ManejadorCliente extends Thread {
                         case -1:
                             System.out.println("Cliente " + idCliente + " desconectado.");
                             flujoSalida.writeUTF("Desconectado");
-                            estado = -1;
-                            break;
 
                         default:
                             flujoSalida.writeUTF("Comando no reconocido");
