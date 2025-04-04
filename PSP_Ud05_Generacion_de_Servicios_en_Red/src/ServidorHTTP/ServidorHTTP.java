@@ -1,4 +1,4 @@
-package PaquetePrincipal;
+package ServidorHTTP;
 
 import java.io.BufferedReader;
 import java.net.Socket;

@@ -1,4 +1,3 @@
-
 package clienteftp;
 
 //librerías de apache para FTP
