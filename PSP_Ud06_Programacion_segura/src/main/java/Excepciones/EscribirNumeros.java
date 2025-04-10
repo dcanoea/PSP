@@ -1,3 +1,5 @@
+package Excepciones;
+
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -38,7 +40,7 @@ public class EscribirNumeros {
 
         try {
             System.out.println("Entrando a la zona Try");
-            out = new PrintWriter(new FileWriter("./src/main/java/Salida.txt"));
+            out = new PrintWriter(new FileWriter("./src/main/java/Excepciones/Salida.txt"));
 
             for (int i = 0; i < SIZE; i++) {
                 out.println("Valor de: " + i + " = " + numeros.elementAt(i));

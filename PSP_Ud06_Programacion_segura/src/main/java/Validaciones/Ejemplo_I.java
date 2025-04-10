@@ -1,3 +1,5 @@
+package Validaciones;
+
 
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -11,7 +13,7 @@ import java.util.regex.Pattern;
  *
  * @author David Cano Escario
  */
-public class Validacion_entradas {
+public class Ejemplo_I {
 
     /**
      * @param args the command line arguments
